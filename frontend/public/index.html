@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repositorio Académico · ESFM José David Berrios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo" onclick="showPage('home')">
+      <div class="logo-badge">
+        <span class="logo-icon">⚡</span>
+      </div>
+      <div class="logo-text">
+        <span class="logo-main">ESFM</span>
+        <span class="logo-sub">José David Berrios</span>
+      </div>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="#" onclick="showPage('home')" class="nav-link active" data-page="home">Inicio</a>
+      <a href="#" onclick="showPage('repositorio')" class="nav-link" data-page="repositorio">Repositorio</a>
+      <a href="#" onclick="showPage('categorias-page')" class="nav-link" data-page="categorias-page">Áreas</a>
+      <a href="#" onclick="showPage('about')" class="nav-link" data-page="about">Institución</a>
+    </div>
+    <div class="nav-actions">
+      <div id="navGuest" class="nav-guest">
+        <button onclick="openModal('loginModal')" class="btn-ghost">Iniciar Sesión</button>
+        <button onclick="openModal('registerModal')" class="btn-primary-nav">Registrarse</button>
+      </div>
+      <div id="navUser" class="nav-user hidden">
+        <button class="notif-btn" onclick="toggleNotif()" id="notifBtn">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+          <span class="notif-badge hidden" id="notifBadge">0</span>
+        </button>
+        <div class="user-avatar-btn" onclick="toggleUserMenu()" id="userAvatarBtn">
+          <div class="avatar-circle" id="userAvatar">?</div>
+          <span id="userNameNav">Usuario</span>
+          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="user-dropdown hidden" id="userDropdown">
+          <div class="dropdown-header">
+            <div class="avatar-circle-lg" id="userAvatarLg">?</div>
+            <div>
+              <div class="dropdown-name" id="dropdownName">Usuario</div>
+              <div class="dropdown-role" id="dropdownRole">estudiante</div>
+            </div>
+          </div>
+          <hr class="dropdown-divider">
+          <a href="#" onclick="showPage('perfil'); closeDropdowns()" class="dropdown-item">👤 Mi Perfil</a>
+          <a href="#" onclick="showPage('mis-proyectos'); closeDropdowns()" class="dropdown-item">📁 Mis Proyectos</a>
+          <a href="#" onclick="showPage('favoritos'); closeDropdowns()" class="dropdown-item">❤️ Favoritos</a>
+          <div id="adminMenuItems" class="hidden">
+            <hr class="dropdown-divider">
+            <a href="#" onclick="showPage('admin'); closeDropdowns()" class="dropdown-item admin-link">⚙️ Panel Admin</a>
+          </div>
+          <hr class="dropdown-divider">
+          <a href="#" onclick="logout()" class="dropdown-item logout-item">🚪 Cerrar Sesión</a>
+        </div>
+      </div>
+      <button class="hamburger" onclick="toggleMobileMenu()" id="hamburger">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+  <!-- Notificaciones dropdown -->
+  <div class="notif-panel hidden" id="notifPanel"></div>
+</nav>
+
+<!-- PAGES CONTAINER -->
+<div id="app">
+
+<!-- ====== HOME PAGE ====== -->
+<div id="page-home" class="page active">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg">
+      <div class="hero-orb orb1"></div>
+      <div class="hero-orb orb2"></div>
+      <div class="hero-orb orb3"></div>
+      <div class="hero-grid"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        Repositorio Académico Digital · Bolivia
+      </div>
+      <h1 class="hero-title">
+        El conocimiento de<br>
+        <span class="hero-highlight">ESFM José David Berrios</span><br>
+        al alcance de todos
+      </h1>
+      <p class="hero-desc">Explora, descarga y comparte proyectos de investigación de nuestra institución. Una plataforma moderna para preservar y difundir el talento académico boliviano.</p>
+      <div class="hero-actions">
+        <button onclick="showPage('repositorio')" class="btn-hero-primary">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+          Explorar Repositorio
+        </button>
+        <button onclick="openModal('registerModal')" class="btn-hero-ghost" id="heroRegisterBtn">
+          Subir mi Proyecto →
+        </button>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-card floating">
+        <div class="hcard-icon">📊</div>
+        <div class="hcard-info">
+          <div class="hcard-num" id="heroProyectos">0</div>
+          <div class="hcard-label">Proyectos</div>
+        </div>
+      </div>
+      <div class="hero-card floating delay1">
+        <div class="hcard-icon">🎓</div>
+        <div class="hcard-info">
+          <div class="hcard-num" id="heroEstudiantes">0</div>
+          <div class="hcard-label">Estudiantes</div>
+        </div>
+      </div>
+      <div class="hero-card floating delay2">
+        <div class="hcard-icon">⬇️</div>
+        <div class="hcard-info">
+          <div class="hcard-num" id="heroDescargas">0</div>
+          <div class="hcard-label">Descargas</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BÚSQUEDA RÁPIDA -->
+  <section class="quick-search-section">
+    <div class="container">
+      <div class="quick-search-box">
+        <div class="search-icon-big">🔍</div>
+        <div class="search-input-wrap">
+          <input type="text" placeholder="Buscar proyectos, temas, autores..." class="search-input-hero" id="heroSearch">
+          <button onclick="searchFromHero()" class="search-btn-hero">Buscar</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORÍAS -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Áreas de Conocimiento</h2>
+        <p class="section-sub">Explora proyectos por área académica</p>
+      </div>
+      <div class="cats-grid" id="homeCats"></div>
+    </div>
+  </section>
+
+  <!-- PROYECTOS DESTACADOS -->
+  <section class="section section-dark">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title light">Proyectos Destacados</h2>
+        <p class="section-sub light">Los trabajos más relevantes de nuestra comunidad</p>
+      </div>
+      <div class="projects-grid" id="homeDestacados"></div>
+      <div class="section-footer">
+        <button onclick="showPage('repositorio')" class="btn-outline-light">Ver todos los proyectos →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROYECTOS RECIENTES -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Últimas Incorporaciones</h2>
+        <p class="section-sub">Los proyectos más recientes del repositorio</p>
+      </div>
+      <div class="projects-grid" id="homeRecientes"></div>
+    </div>
+  </section>
+
+  <!-- STATS BANNER -->
+  <section class="stats-banner">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-num" id="statProyectos">0</div>
+          <div class="stat-label">Proyectos Publicados</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num" id="statEstudiantes">0</div>
+          <div class="stat-label">Estudiantes Registrados</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num" id="statDescargas">0</div>
+          <div class="stat-label">Descargas Totales</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num" id="statVisitas">0</div>
+          <div class="stat-label">Visitas Totales</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">⚡ ESFM JDB</div>
+          <p>Escuela Superior de Formación de Maestros<br><strong>José David Berrios</strong><br>Bolivia</p>
+        </div>
+        <div class="footer-col">
+          <h4>Repositorio</h4>
+          <a href="#" onclick="showPage('repositorio')">Explorar Proyectos</a>
+          <a href="#" onclick="showPage('categorias-page')">Áreas de Estudio</a>
+          <a href="#" onclick="openModal('registerModal')">Subir Proyecto</a>
+        </div>
+        <div class="footer-col">
+          <h4>Institución</h4>
+          <a href="#" onclick="showPage('about')">Sobre ESFM</a>
+          <a href="#">Contacto</a>
+        </div>
+        <div class="footer-col">
+          <h4>Acceso</h4>
+          <a href="#" onclick="openModal('loginModal')">Iniciar Sesión</a>
+          <a href="#" onclick="openModal('registerModal')">Registrarse</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2024 ESFM José David Berrios · Repositorio Académico Digital · Bolivia</p>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- ====== REPOSITORIO PAGE ====== -->
+<div id="page-repositorio" class="page">
+  <div class="page-hero-sm">
+    <div class="container">
+      <h1 class="page-title">📚 Repositorio de Proyectos</h1>
+      <p class="page-desc">Explora todos los proyectos académicos de la institución</p>
+    </div>
+  </div>
+  <div class="container repo-layout">
+    <!-- Filters sidebar -->
+    <aside class="filters-sidebar">
+      <div class="filter-card">
+        <h3 class="filter-title">🔍 Búsqueda</h3>
+        <input type="text" placeholder="Buscar proyectos..." class="filter-input" id="repoSearch">
+        <button onclick="applyFilters()" class="btn-filter">Buscar</button>
+      </div>
+      <div class="filter-card">
+        <h3 class="filter-title">📂 Categoría</h3>
+        <div id="filterCats" class="filter-checkboxes"></div>
+      </div>
+      <div class="filter-card">
+        <h3 class="filter-title">📅 Año</h3>
+        <select class="filter-select" id="filterAnio">
+          <option value="">Todos los años</option>
+        </select>
+      </div>
+      <div class="filter-card">
+        <h3 class="filter-title">🎓 Carrera</h3>
+        <select class="filter-select" id="filterCarrera">
+          <option value="">Todas las carreras</option>
+        </select>
+      </div>
+      <div class="filter-card">
+        <h3 class="filter-title">↕️ Ordenar por</h3>
+        <select class="filter-select" id="filterOrden">
+          <option value="reciente">Más recientes</option>
+          <option value="visitas">Más vistos</option>
+          <option value="descargas">Más descargados</option>
+          <option value="calificacion">Mejor calificados</option>
+          <option value="titulo">Alfabético</option>
+        </select>
+      </div>
+      <button onclick="clearFilters()" class="btn-clear-filters">Limpiar filtros</button>
+    </aside>
+    <!-- Results -->
+    <div class="repo-results">
+      <div class="results-header">
+        <span class="results-count" id="resultsCount">Cargando...</span>
+        <div class="view-toggle">
+          <button class="view-btn active" onclick="setView('grid')" id="viewGrid">⊞</button>
+          <button class="view-btn" onclick="setView('list')" id="viewList">☰</button>
+        </div>
+      </div>
+      <div class="projects-grid" id="repoGrid"></div>
+      <div class="pagination" id="repoPagination"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== DETALLE PROYECTO ====== -->
+<div id="page-proyecto" class="page">
+  <div id="proyectoDetail"></div>
+</div>
+
+<!-- ====== CATEGORÍAS PAGE ====== -->
+<div id="page-categorias-page" class="page">
+  <div class="page-hero-sm">
+    <div class="container">
+      <h1 class="page-title">🎯 Áreas de Conocimiento</h1>
+      <p class="page-desc">Explora nuestro repositorio organizado por disciplinas académicas</p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="cats-detail-grid" id="catsDetailGrid"></div>
+  </div>
+</div>
+
+<!-- ====== PERFIL PAGE ====== -->
+<div id="page-perfil" class="page">
+  <div class="page-hero-sm">
+    <div class="container">
+      <h1 class="page-title">👤 Mi Perfil</h1>
+    </div>
+  </div>
+  <div class="container">
+    <div class="perfil-layout">
+      <div class="perfil-sidebar">
+        <div class="perfil-avatar-big" id="perfilAvatarBig">?</div>
+        <h2 id="perfilNombreH">Nombre</h2>
+        <span class="role-badge" id="perfilRolBadge">estudiante</span>
+        <div class="perfil-stats">
+          <div><strong id="perfilTotalProyectos">0</strong><span>Proyectos</span></div>
+          <div><strong id="perfilTotalFavs">0</strong><span>Favoritos</span></div>
+        </div>
+      </div>
+      <div class="perfil-main">
+        <div class="card-section">
+          <h3>Información Personal</h3>
+          <form onsubmit="updatePerfil(event)" class="form-grid">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Nombre</label>
+                <input type="text" id="perfilNombre" class="form-input">
+              </div>
+              <div class="form-group">
+                <label>Apellido</label>
+                <input type="text" id="perfilApellido" class="form-input">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Carrera</label>
+                <input type="text" id="perfilCarrera" class="form-input">
+              </div>
+              <div class="form-group">
+                <label>Semestre</label>
+                <input type="number" id="perfilSemestre" class="form-input" min="1" max="10">
+              </div>
+            </div>
+            <button type="submit" class="btn-primary">Guardar Cambios</button>
+          </form>
+        </div>
+        <div class="card-section">
+          <h3>Cambiar Contraseña</h3>
+          <form onsubmit="changePassword(event)" class="form-grid">
+            <div class="form-group">
+              <label>Contraseña Actual</label>
+              <input type="password" id="passActual" class="form-input">
+            </div>
+            <div class="form-group">
+              <label>Nueva Contraseña</label>
+              <input type="password" id="passNueva" class="form-input">
+            </div>
+            <button type="submit" class="btn-primary">Actualizar Contraseña</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== MIS PROYECTOS ====== -->
+<div id="page-mis-proyectos" class="page">
+  <div class="page-hero-sm">
+    <div class="container">
+      <div class="page-header-row">
+        <div>
+          <h1 class="page-title">📁 Mis Proyectos</h1>
+          <p class="page-desc">Gestiona tus proyectos enviados al repositorio</p>
+        </div>
+        <button onclick="openModal('uploadModal')" class="btn-primary">+ Subir Proyecto</button>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="projects-grid" id="misProyectosGrid"></div>
+  </div>
+</div>
+
+<!-- ====== FAVORITOS ====== -->
+<div id="page-favoritos" class="page">
+  <div class="page-hero-sm">
+    <div class="container">
+      <h1 class="page-title">❤️ Mis Favoritos</h1>
+    </div>
+  </div>
+  <div class="container">
+    <div class="projects-grid" id="favoritosGrid"></div>
+  </div>
+</div>
+
+<!-- ====== ABOUT PAGE ====== -->
+<div id="page-about" class="page">
+  <div class="about-hero">
+    <div class="container">
+      <h1>ESFM José David Berrios</h1>
+      <p>Formando educadores para Bolivia desde hace décadas</p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="about-content">
+      <div class="about-card">
+        <div class="about-icon">🏛️</div>
+        <h3>Nuestra Institución</h3>
+        <p>La Escuela Superior de Formación de Maestros "José David Berrios" es una institución de educación superior dedicada a la formación de docentes comprometidos con la educación boliviana, con valores de excelencia, ética y servicio a la comunidad.</p>
+      </div>
+      <div class="about-card">
+        <div class="about-icon">🎯</div>
+        <h3>Misión</h3>
+        <p>Formar maestros y maestras con alta calidad académica, sólidos valores éticos y comprometidos con la transformación educativa y social de Bolivia, fundamentados en la Ley Avelino Siñani - Elizardo Pérez.</p>
+      </div>
+      <div class="about-card">
+        <div class="about-icon">🌟</div>
+        <h3>Visión</h3>
+        <p>Ser la institución líder en formación docente en Bolivia, reconocida por la excelencia académica, la innovación pedagógica y el compromiso con el desarrollo integral de la nación plurinacional.</p>
+      </div>
+      <div class="about-card">
+        <div class="about-icon">📚</div>
+        <h3>Repositorio Académico</h3>
+        <p>Este repositorio digital preserva y difunde el conocimiento generado por nuestra comunidad académica. Los proyectos aquí almacenados representan el esfuerzo e inteligencia de nuestros estudiantes y docentes.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== ADMIN PAGE ====== -->
+<div id="page-admin" class="page">
+  <div class="page-hero-sm">
+    <div class="container">
+      <h1 class="page-title">⚙️ Panel de Administración</h1>
+      <p class="page-desc">Gestión completa del repositorio académico</p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="switchAdminTab('pendientes')">📋 Pendientes <span id="pendienteBadge" class="tab-badge">0</span></button>
+      <button class="admin-tab" onclick="switchAdminTab('proyectos')">📚 Proyectos</button>
+      <button class="admin-tab" onclick="switchAdminTab('usuarios')">👥 Usuarios</button>
+      <button class="admin-tab" onclick="switchAdminTab('estadisticas')">📊 Estadísticas</button>
+    </div>
+    <div id="adminContent"></div>
+  </div>
+</div>
+
+</div><!-- end #app -->
+
+<!-- ====== MODALES ====== -->
+
+<!-- Login Modal -->
+<div class="modal-overlay hidden" id="loginModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+    <div class="modal-header">
+      <div class="modal-icon">🔐</div>
+      <h2>Iniciar Sesión</h2>
+      <p>Accede a tu cuenta del repositorio</p>
+    </div>
+    <form onsubmit="doLogin(event)" class="modal-form">
+      <div class="form-group">
+        <label>Correo Institucional</label>
+        <input type="email" id="loginEmail" placeholder="tu@esfm.edu.bo" class="form-input" required>
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <div class="input-password">
+          <input type="password" id="loginPass" placeholder="••••••••" class="form-input" required>
+          <button type="button" class="show-pass" onclick="togglePass('loginPass')">👁</button>
+        </div>
+      </div>
+      <div id="loginError" class="form-error hidden"></div>
+      <button type="submit" class="btn-form-primary" id="loginBtn">Iniciar Sesión</button>
+    </form>
+    <div class="modal-footer-text">
+      ¿No tienes cuenta? <a href="#" onclick="switchModal('loginModal','registerModal')">Regístrate aquí</a>
+    </div>
+    <div class="demo-accounts">
+      <p>Cuentas de demo:</p>
+      <button onclick="fillDemo('admin@esfm.edu.bo','Admin2024!')">👑 Admin</button>
+      <button onclick="fillDemo('maria@esfm.edu.bo','123456')">🎓 Estudiante</button>
+      <button onclick="fillDemo('rflores@esfm.edu.bo','docente123')">📖 Docente</button>
+    </div>
+  </div>
+</div>
+
+<!-- Register Modal -->
+<div class="modal-overlay hidden" id="registerModal">
+  <div class="modal modal-lg">
+    <button class="modal-close" onclick="closeModal('registerModal')">✕</button>
+    <div class="modal-header">
+      <div class="modal-icon">🎓</div>
+      <h2>Crear Cuenta</h2>
+      <p>Únete al repositorio académico</p>
+    </div>
+    <form onsubmit="doRegister(event)" class="modal-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nombre *</label>
+          <input type="text" id="regNombre" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label>Apellido *</label>
+          <input type="text" id="regApellido" class="form-input" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Correo Electrónico *</label>
+        <input type="email" id="regEmail" class="form-input" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Carrera</label>
+          <input type="text" id="regCarrera" class="form-input" placeholder="Ej: Matemáticas">
+        </div>
+        <div class="form-group">
+          <label>Semestre</label>
+          <input type="number" id="regSemestre" class="form-input" min="1" max="10">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Contraseña * (mínimo 6 caracteres)</label>
+        <div class="input-password">
+          <input type="password" id="regPass" class="form-input" required>
+          <button type="button" class="show-pass" onclick="togglePass('regPass')">👁</button>
+        </div>
+      </div>
+      <div id="regError" class="form-error hidden"></div>
+      <button type="submit" class="btn-form-primary">Crear Mi Cuenta</button>
+    </form>
+    <div class="modal-footer-text">
+      ¿Ya tienes cuenta? <a href="#" onclick="switchModal('registerModal','loginModal')">Inicia sesión</a>
+    </div>
+  </div>
+</div>
+
+<!-- Upload Modal -->
+<div class="modal-overlay hidden" id="uploadModal">
+  <div class="modal modal-xl">
+    <button class="modal-close" onclick="closeModal('uploadModal')">✕</button>
+    <div class="modal-header">
+      <div class="modal-icon">📤</div>
+      <h2>Subir Proyecto</h2>
+      <p>Comparte tu trabajo con la comunidad académica</p>
+    </div>
+    <form onsubmit="uploadProject(event)" class="modal-form" enctype="multipart/form-data">
+      <div class="form-group">
+        <label>Título del Proyecto *</label>
+        <input type="text" id="upTitulo" class="form-input" placeholder="Ej: Análisis de ecuaciones diferenciales aplicadas..." required>
+      </div>
+      <div class="form-group">
+        <label>Descripción Completa *</label>
+        <textarea id="upDescripcion" class="form-textarea" rows="4" placeholder="Describe detalladamente tu proyecto, objetivos, metodología..." required></textarea>
+      </div>
+      <div class="form-group">
+        <label>Resumen Ejecutivo</label>
+        <textarea id="upResumen" class="form-textarea" rows="2" placeholder="Resumen breve para la portada del proyecto..."></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Área / Categoría</label>
+          <select id="upCategoria" class="form-select">
+            <option value="">Seleccionar área...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Carrera</label>
+          <input type="text" id="upCarrera" class="form-input" placeholder="Tu carrera">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Año</label>
+          <input type="number" id="upAnio" class="form-input" value="2024" min="2000" max="2030">
+        </div>
+        <div class="form-group">
+          <label>Semestre</label>
+          <input type="number" id="upSemestre" class="form-input" min="1" max="10">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Palabras Clave</label>
+        <input type="text" id="upKeywords" class="form-input" placeholder="matemáticas, cálculo, álgebra (separadas por comas)">
+      </div>
+      <div class="form-group">
+        <label>Archivo PDF * (máximo 50MB)</label>
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('upPdf').click()">
+          <div class="upload-icon">📄</div>
+          <div class="upload-text">Arrastra tu PDF aquí o <span class="upload-link">haz clic para seleccionar</span></div>
+          <div class="upload-info" id="uploadInfo">PDF · Máximo 50MB</div>
+        </div>
+        <input type="file" id="upPdf" accept=".pdf" class="hidden" onchange="handlePdfSelect(this)">
+      </div>
+      <div id="uploadError" class="form-error hidden"></div>
+      <div id="uploadProgress" class="upload-progress hidden">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <span id="progressText">Subiendo...</span>
+      </div>
+      <button type="submit" class="btn-form-primary" id="uploadBtn">📤 Subir Proyecto</button>
+    </form>
+  </div>
+</div>
+
+<!-- Toast notifications -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
