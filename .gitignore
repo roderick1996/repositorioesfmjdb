@@ -3,3 +3,4 @@ data/repositorio.db-wal
 data/repositorio.db-shm
 .env
 node_modules/
+node_modules/
