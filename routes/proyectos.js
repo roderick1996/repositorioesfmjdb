@@ -4,23 +4,15 @@ const { q } = require('../database');
 const { auth, adminOnly, docenteOrAdmin } = require('../middleware/auth');
 const { upload, cloudinary } = require('../uploads');
 
-router.get('/', async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
-    const { buscar, categoria, carrera, anio, estado = 'aprobado', orden = 'reciente', pagina = 1, limite = 12, destacados } = req.query;
-    const offset = (parseInt(pagina) - 1) * parseInt(limite);
-    let where = ['p.estado = ?'];
-    let params = [estado];
-    if (buscar) { where.push('(p.titulo LIKE ? OR p.descripcion LIKE ? OR p.palabras_clave LIKE ?)'); params.push(`%${buscar}%`, `%${buscar}%`, `%${buscar}%`); }
-    if (categoria) { where.push('p.categoria_id = ?'); params.push(categoria); }
-    if (carrera) { where.push('p.carrera LIKE ?'); params.push(`%${carrera}%`); }
-    if (anio) { where.push('p.anio = ?'); params.push(anio); }
-    if (destacados) { where.push('p.destacado = 1'); }
-    const orderMap = { reciente: 'p.created_at DESC', antiguo: 'p.created_at ASC', visitas: 'p.visitas DESC', descargas: 'p.descargas DESC', calificacion: 'p.calificacion_promedio DESC', titulo: 'p.titulo ASC' };
-    const orderBy = orderMap[orden] || orderMap.reciente;
-    const whereStr = where.join(' AND ');
-    const r1 = await q(`SELECT p.*, u.nombre || ' ' || u.apellido AS autor_nombre, u.carrera AS autor_carrera, c.nombre AS categoria_nombre, c.color AS categoria_color, c.icono AS categoria_icono FROM proyectos p JOIN usuarios u ON p.autor_id = u.id LEFT JOIN categorias c ON p.categoria_id = c.id WHERE ${whereStr} ORDER BY ${orderBy} LIMIT ? OFFSET ?`, [...params, parseInt(limite), offset]);
-    const r2 = await q(`SELECT COUNT(*) as total FROM proyectos p WHERE ${whereStr}`, params);
-    res.json({ proyectos: r1.rows, total: r2.rows[0].total, pagina: parseInt(pagina), limite: parseInt(limite) });
+    const r = await q(`SELECT p.*, u.nombre || ' ' || u.apellido AS autor_nombre, u.email AS autor_email, u.carrera AS autor_carrera, u.semestre AS autor_semestre, c.nombre AS categoria_nombre, c.color AS categoria_color, c.icono AS categoria_icono FROM proyectos p JOIN usuarios u ON p.autor_id = u.id LEFT JOIN categorias c ON p.categoria_id = c.id WHERE p.id = ?`, [req.params.id]);
+    const proyecto = r.rows[0];
+    if (!proyecto) return res.status(404).json({ error: 'Proyecto no encontrado' });
+    await q('UPDATE proyectos SET visitas = visitas + 1 WHERE id = ?', [req.params.id]);
+    const r2 = await q(`SELECT cm.*, u.nombre || ' ' || u.apellido AS usuario_nombre, u.rol AS usuario_rol FROM comentarios cm JOIN usuarios u ON cm.usuario_id = u.id WHERE cm.proyecto_id = ? AND cm.aprobado = 1 ORDER BY cm.created_at DESC`, [req.params.id]);
+    const r3 = await q(`SELECT p.id, p.titulo, p.carrera, p.anio, p.calificacion_promedio, u.nombre || ' ' || u.apellido AS autor_nombre, c.color AS categoria_color, c.icono AS categoria_icono FROM proyectos p JOIN usuarios u ON p.autor_id = u.id LEFT JOIN categorias c ON p.categoria_id = c.id WHERE p.estado = 'aprobado' AND p.id != ? AND p.categoria_id = ? ORDER BY p.visitas DESC LIMIT 4`, [req.params.id, proyecto.categoria_id || 0]);
+    res.json({ ...proyecto, comentarios: r2.rows, relacionados: r3.rows });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
