@@ -4,8 +4,8 @@ const path = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-
-app.set('trust proxy', 1);
+const app = express();          // ← primero esto
+app.set('trust proxy', 1);      // ← luego esto
 const PORT = process.env.PORT || 3000;
 
 // Security middleware
