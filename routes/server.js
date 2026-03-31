@@ -4,10 +4,10 @@ const path = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const { initDB } = require('./database');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+app.set('trust proxy', 1);
+const PORT = process.env.PORT || 10000;
 
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 app.use(cors({ origin: '*' }));
@@ -26,13 +26,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, './frontend/public/index.html'));
 });
 
-// Inicializar DB antes de arrancar
-initDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`\n🎓 ESFM Repositorio Académico`);
-    console.log(`🌐 Servidor: http://localhost:${PORT}\n`);
-  });
-}).catch(err => {
-  console.error('❌ Error inicializando DB:', err);
-  process.exit(1);
+app.listen(PORT, () => {
+  console.log(`\n🎓 ESFM Repositorio Académico`);
+  console.log(`🌐 Servidor: http://localhost:${PORT}\n`);
 });
