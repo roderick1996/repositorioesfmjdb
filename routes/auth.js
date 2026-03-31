@@ -9,11 +9,11 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'Email y contraseña requeridos' });
-    const result = await q('SELECT * FROM usuarios WHERE email = ? AND activo = 1', [email.toLowerCase().trim()]);
+    const result = await q('SELECT * FROM usuarios WHERE email = $1 AND activo = 1', [email.toLowerCase().trim()]);
     const user = result.rows[0];
     if (!user || !bcrypt.compareSync(password, user.password))
       return res.status(401).json({ error: 'Credenciales incorrectas' });
-    await q('UPDATE usuarios SET last_login = CURRENT_TIMESTAMP WHERE id = ?', [user.id]);
+    await q('UPDATE usuarios SET last_login = CURRENT_TIMESTAMP WHERE id = $1', [user.id]);
     const token = jwt.sign({ id: user.id, rol: user.rol }, SECRET, { expiresIn: '7d' });
     const { password: _, ...userData } = user;
     res.json({ token, user: userData, message: `¡Bienvenido/a, ${user.nombre}!` });
@@ -27,15 +27,15 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'Todos los campos son obligatorios' });
     if (password.length < 6)
       return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres' });
-    const exists = await q('SELECT id FROM usuarios WHERE email = ?', [email.toLowerCase().trim()]);
+    const exists = await q('SELECT id FROM usuarios WHERE email = $1', [email.toLowerCase().trim()]);
     if (exists.rows.length > 0) return res.status(409).json({ error: 'El email ya está registrado' });
     const hash = bcrypt.hashSync(password, 10);
     const result = await q(
-      'INSERT INTO usuarios (nombre, apellido, email, password, carrera, semestre) VALUES (?, ?, ?, ?, ?, ?)',
+      'INSERT INTO usuarios (nombre, apellido, email, password, carrera, semestre) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id',
       [nombre, apellido, email.toLowerCase().trim(), hash, carrera || null, semestre || null]
     );
-    const token = jwt.sign({ id: Number(result.lastInsertRowid), rol: 'estudiante' }, SECRET, { expiresIn: '7d' });
-    res.status(201).json({ token, message: 'Cuenta creada exitosamente', userId: Number(result.lastInsertRowid) });
+    const token = jwt.sign({ id: result.rows[0].id, rol: 'estudiante' }, SECRET, { expiresIn: '7d' });
+    res.status(201).json({ token, message: 'Cuenta creada exitosamente', userId: result.rows[0].id });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -45,7 +45,7 @@ router.get('/me', auth, async (req, res) => {
       SELECT u.*,
         (SELECT COUNT(*) FROM proyectos WHERE autor_id = u.id) as total_proyectos,
         (SELECT COUNT(*) FROM favoritos WHERE usuario_id = u.id) as total_favoritos
-      FROM usuarios u WHERE u.id = ?
+      FROM usuarios u WHERE u.id = $1
     `, [req.user.id]);
     const user = result.rows[0];
     if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
@@ -57,7 +57,7 @@ router.get('/me', auth, async (req, res) => {
 router.put('/perfil', auth, async (req, res) => {
   try {
     const { nombre, apellido, carrera, semestre } = req.body;
-    await q('UPDATE usuarios SET nombre=?, apellido=?, carrera=?, semestre=? WHERE id=?',
+    await q('UPDATE usuarios SET nombre=$1, apellido=$2, carrera=$3, semestre=$4 WHERE id=$5',
       [nombre, apellido, carrera, semestre, req.user.id]);
     res.json({ message: 'Perfil actualizado' });
   } catch (err) { res.status(500).json({ error: err.message }); }
@@ -66,13 +66,13 @@ router.put('/perfil', auth, async (req, res) => {
 router.put('/password', auth, async (req, res) => {
   try {
     const { actual, nueva } = req.body;
-    const result = await q('SELECT password FROM usuarios WHERE id=?', [req.user.id]);
+    const result = await q('SELECT password FROM usuarios WHERE id=$1', [req.user.id]);
     const user = result.rows[0];
     if (!bcrypt.compareSync(actual, user.password))
       return res.status(400).json({ error: 'Contraseña actual incorrecta' });
     if (nueva.length < 6)
       return res.status(400).json({ error: 'La nueva contraseña debe tener al menos 6 caracteres' });
-    await q('UPDATE usuarios SET password=? WHERE id=?', [bcrypt.hashSync(nueva, 10), req.user.id]);
+    await q('UPDATE usuarios SET password=$1 WHERE id=$2', [bcrypt.hashSync(nueva, 10), req.user.id]);
     res.json({ message: 'Contraseña actualizada exitosamente' });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
