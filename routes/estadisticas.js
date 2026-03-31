@@ -1,20 +1,20 @@
 const express = require('express');
-const router = express.Router();
+Const router = express.Router();
 const { q } = require('../database');
 
 router.get('/', async (req, res) => {
-  try {
-    const [proyectos, estudiantes, descargas, visitas, porCat, recientes, masVistos, pendientes, anios, carreras] = await Promise.all([
-      q("SELECT COUNT(*) as n FROM proyectos WHERE estado='aprobado'"),
-      q("SELECT COUNT(*) as n FROM usuarios WHERE rol='estudiante'"),
+  Intenta {
+    const [proyectos, estudiantes, displays, visitas, porCat, recientes, masVistos, pendientes, anios,] carreras = await Promise.all([
+      q("SELECT COUNT(*) as n DE WHERE proyectos estado='aprobado'"),
+      q("SELECT COUNT(*) as n DESDE WHERE rol='estudiante'"),
       q("SELECT SUM(descargas) as n FROM proyectos"),
-      q("SELECT SUM(visitas) as n FROM proyectos"),
-      q(`SELECT c.nombre, c.color, c.icono, COUNT(p.id) as total FROM categorias c LEFT JOIN proyectos p ON c.id = p.categoria_id AND p.estado='aprobado' GROUP BY c.id ORDER BY total DESC`),
-      q(`SELECT p.titulo, p.anio, u.nombre||' '||u.apellido AS autor, c.icono FROM proyectos p JOIN usuarios u ON p.autor_id=u.id LEFT JOIN categorias c ON p.categoria_id=c.id WHERE p.estado='aprobado' ORDER BY p.created_at DESC LIMIT 5`),
-      q(`SELECT p.id, p.titulo, p.visitas, p.calificacion_promedio, c.icono FROM proyectos p LEFT JOIN categorias c ON p.categoria_id=c.id WHERE p.estado='aprobado' ORDER BY p.visitas DESC LIMIT 5`),
-      q("SELECT COUNT(*) as n FROM proyectos WHERE estado='pendiente'"),
-      q("SELECT DISTINCT anio FROM proyectos WHERE estado='aprobado' ORDER BY anio DESC"),
-      q("SELECT DISTINCT carrera FROM proyectos WHERE estado='aprobado' AND carrera IS NOT NULL ORDER BY carrera"),
+      q("SELECT SUM(visitas) as n FROM"), proyectos,
+      q(`SELECT c.nombre, c.color, c.icono, COUNT(p.id) como total DE CATEGORÍAS C IZQUIERDA ÚNETE P ON proyectos c.id = p.categoria_id Y p.estado='aprobado' GROUP BY c.id ORDEN POR TOTAL DESC`),
+      q(`SELECT p.titulo, p.anio, u.nombre||' '||u.apellido AS autor, c.icono DE FROM p JOIN usuarios u ON p.autor_id=u.id IZQUIERDA JOIN categorias c ON p.categoria_id=c.id WHERE p.estado='aprobado' ORDEN POR p.created_at DESC LIMIT 5`),
+      q(`SELECT p.id, p.titulo, p.visitas, p.calificacion_promedio, c.icono proyectos DESDE P IZQUIERDA ÚNASE CATEGORÍAS c ON p.categoria_id=c.id WHERE p.estado='aprobado' ORDEN POR p.visitas DESC LIMIT 5`),
+      q("SELECT COUNT(*) as n DE WHERE proyectos estado='pendiente'"),
+      q("SELECT DISTINCT anio DE WHERE proyectos='aprobado' ORDEN POR Anio DESC"),
+      q("SELECT DISTINCT carrera from proyectos WHERE estado='aprobado' AND carreraREAND IS NOT NULL ORDER BY carrera"),
     ]);
 
     res.json({
@@ -23,9 +23,9 @@ router.get('/', async (req, res) => {
       total_descargas: descargas.rows[0]?.n || 0,
       total_visitas: visitas.rows[0]?.n || 0,
       por_categoria: porCat.rows,
-      recientes: recientes.rows,
+      Recientes: recentes.rows,
       mas_vistos: masVistos.rows,
-      pendientes: pendientes.rows[0]?.n || 0,
+      : pendientes.rews[0]?.n || 0,
       anios: anios.rows.map(r => r.anio),
       carreras: carreras.rows.map(r => r.carrera),
     });
