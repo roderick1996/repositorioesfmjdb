@@ -1,14 +1,18 @@
 const jwt = require('jsonwebtoken');
-const db = require('../database');
+const { q } = require('../database');
 
 const SECRET = process.env.JWT_SECRET || 'esfm_jose_david_berrios_2024_secret_key';
 
-const auth = (req, res, next) => {
+const auth = async (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) return res.status(401).json({ error: 'Token requerido' });
   try {
     const decoded = jwt.verify(token, SECRET);
-    const user = db.prepare('SELECT id, nombre, apellido, email, rol, carrera, semestre, avatar FROM usuarios WHERE id = ? AND activo = 1').get(decoded.id);
+    const result = await q(
+      'SELECT id, nombre, apellido, email, rol, carrera, semestre, avatar FROM usuarios WHERE id = ? AND activo = 1',
+      [decoded.id]
+    );
+    const user = result.rows[0];
     if (!user) return res.status(401).json({ error: 'Usuario no encontrado' });
     req.user = user;
     next();
